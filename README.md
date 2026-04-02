@@ -6,7 +6,7 @@ A Python-based pipeline that:
 2. Listens for webhook notifications when actor runs complete
 3. Normalizes data from multiple actors into a single JSON format
 4. Filters items using local Ollama LLM based on criteria from a Word document
-5. Saves filtered results to Google Sheets
+5. Saves filtered results to a local Excel file
 
 ## Setup
 
@@ -14,7 +14,6 @@ A Python-based pipeline that:
 
 - Python 3.8+
 - Ollama installed and running locally
-- Google Cloud service account with Sheets API enabled
 - Apify account with API token
 
 ### Installation
@@ -40,26 +39,21 @@ A Python-based pipeline that:
    - Copy `.env.example` to `.env`
    - Fill in your API keys and configuration
 
-5. Set up Google Sheets credentials:
-   - Create a Google Cloud service account
-   - Enable Google Sheets API
-   - Download credentials JSON file
-   - Place it in the project root as `credentials.json`
-
-6. Install and start Ollama:
+5. Install and start Ollama:
 
    ```bash
    # Install Ollama from https://ollama.ai
    ollama pull mistral:7b
    ```
 
-7. Create your filter criteria Word document (`filter_criteria.docx`)
+6. Create your filter criteria Word document (`filter_criteria.docx`)
 
 ## Configuration
 
 Edit the `config.py` file to set:
 
 - Actor IDs for your Apify actors
+- Excel file path and sheet name
 - File paths
 - Model names
 
@@ -78,7 +72,7 @@ The pipeline will:
 3. Wait for webhook notifications
 4. Process and normalize the data
 5. Filter using LLM
-6. Save results to Google Sheets
+6. Save results to a local Excel file
 
 ## Project Structure
 

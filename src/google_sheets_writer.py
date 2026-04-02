@@ -1,52 +1,72 @@
-# Google Sheets writer
+# Excel writer
 import os
-import gspread
-from oauth2client.service_account import ServiceAccountCredentials
+import pandas as pd
 
-class GoogleSheetsWriter:
-    def __init__(self, credentials_path, sheet_name):
+class ExcelWriter:
+    def __init__(self, file_path, sheet_name='Sheet1'):
+        self.file_path = file_path
         self.sheet_name = sheet_name
-        self.scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
-        self.creds = ServiceAccountCredentials.from_json_keyfile_name(credentials_path, self.scope)
-        self.client = gspread.authorize(self.creds)
 
-    def write_data(self, data, worksheet_name='Sheet1'):
-        """Write data to Google Sheet"""
+        # Ensure the directory exists
+        os.makedirs(os.path.dirname(file_path), exist_ok=True)
+
+    def write_data(self, data, worksheet_name=None):
+        """Write data to Excel file"""
         try:
-            sheet = self.client.open(self.sheet_name).worksheet(worksheet_name)
+            if not data:
+                print("No data to write")
+                return False
 
-            # Clear existing data
-            sheet.clear()
+            # Use provided worksheet_name or default
+            sheet_name = worksheet_name or self.sheet_name
 
-            # Prepare headers
-            if data:
-                headers = list(data[0].keys())
-                sheet.append_row(headers)
+            # Convert data to DataFrame
+            df = pd.DataFrame(data)
 
-                # Write data rows
-                for item in data:
-                    row = [str(item.get(header, '')) for header in headers]
-                    sheet.append_row(row)
+            # Write to Excel
+            with pd.ExcelWriter(self.file_path, engine='openpyxl') as writer:
+                df.to_excel(writer, sheet_name=sheet_name, index=False)
 
-            print(f"Data written to Google Sheet: {self.sheet_name}")
+            print(f"Data written to Excel file: {self.file_path}")
             return True
         except Exception as e:
-            print(f"Error writing to Google Sheets: {e}")
+            print(f"Error writing to Excel file: {e}")
             return False
 
-    def append_data(self, data, worksheet_name='Sheet1'):
-        """Append data to existing Google Sheet"""
+    def append_data(self, data, worksheet_name=None):
+        """Append data to existing Excel file"""
         try:
-            sheet = self.client.open(self.sheet_name).worksheet(worksheet_name)
+            if not data:
+                print("No data to append")
+                return False
 
-            if data:
-                for item in data:
-                    row = [str(value) for value in item.values()]
-                    sheet.append_row(row)
+            sheet_name = worksheet_name or self.sheet_name
 
-            print(f"Data appended to Google Sheet: {self.sheet_name}")
+            # Check if file exists
+            if os.path.exists(self.file_path):
+                # Read existing data
+                try:
+                    existing_df = pd.read_excel(self.file_path, sheet_name=sheet_name)
+                except:
+                    # Sheet doesn't exist, create new
+                    existing_df = pd.DataFrame()
+            else:
+                existing_df = pd.DataFrame()
+
+            # Convert new data to DataFrame
+            new_df = pd.DataFrame(data)
+
+            # Append new data
+            combined_df = pd.concat([existing_df, new_df], ignore_index=True)
+
+            # Write back to Excel
+            with pd.ExcelWriter(self.file_path, engine='openpyxl') as writer:
+                combined_df.to_excel(writer, sheet_name=sheet_name, index=False)
+
+            print(f"Data appended to Excel file: {self.file_path}")
             return True
         except Exception as e:
-            print(f"Error appending to Google Sheets: {e}")
+            print(f"Error appending to Excel file: {e}")
+            return False
             return False</content>
 <parameter name="filePath">c:\Shiv\Projects\AIML\JobAutoPipeline\src\google_sheets_writer.py

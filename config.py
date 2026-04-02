@@ -6,7 +6,7 @@ load_dotenv()
 
 # API Keys
 APIFY_API_TOKEN = os.getenv('APIFY_API_TOKEN')
-GOOGLE_SHEETS_CREDENTIALS_PATH = os.getenv('GOOGLE_SHEETS_CREDENTIALS_PATH', 'credentials.json')
+EXCEL_FILE_PATH = os.getenv('EXCEL_FILE_PATH', 'job_results.xlsx')
 
 # Actor IDs (replace with actual actor IDs)
 ACTOR_IDS = {
@@ -15,8 +15,8 @@ ACTOR_IDS = {
     'actor3': 'your-actor-id-3'
 }
 
-# Google Sheets
-SHEET_NAME = os.getenv('GOOGLE_SHEET_NAME', 'Job Pipeline Results')
+# Excel settings
+EXCEL_SHEET_NAME = os.getenv('EXCEL_SHEET_NAME', 'Job Results')
 
 # Ollama
 OLLAMA_MODEL = os.getenv('OLLAMA_MODEL', 'mistral:7b')

@@ -9,7 +9,7 @@ from src.apify_connector import ApifyConnector
 from src.webhook_listener import run_webhook_server, get_webhook_data
 from src.data_normalizer import DataNormalizer
 from src.llm_filter import LLMFilter
-from src.google_sheets_writer import GoogleSheetsWriter
+from src.google_sheets_writer import ExcelWriter
 import config
 
 def main():
@@ -19,9 +19,9 @@ def main():
     apify = ApifyConnector()
     normalizer = DataNormalizer()
     llm_filter = LLMFilter(model=config.OLLAMA_MODEL)
-    sheets_writer = GoogleSheetsWriter(
-        config.GOOGLE_SHEETS_CREDENTIALS_PATH,
-        config.SHEET_NAME
+    sheets_writer = ExcelWriter(
+        config.EXCEL_FILE_PATH,
+        config.EXCEL_SHEET_NAME
     )
 
     # Load filter criteria from Word document
