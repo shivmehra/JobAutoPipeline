@@ -5,7 +5,7 @@ from docx import Document
 from ollama import Client
 
 class LLMFilter:
-    def __init__(self, model='llama2'):
+    def __init__(self, model='mistral:7b'):
         self.client = Client(host='http://localhost:11434')
         self.model = model
         self.filter_criteria = ""
@@ -51,5 +51,4 @@ class LLMFilter:
         for item in items:
             if self.filter_item(item):
                 filtered_items.append(item)
-        return filtered_items</content>
-<parameter name="filePath">c:\Shiv\Projects\AIML\JobAutoPipeline\src\llm_filter.py
+        return filtered_items

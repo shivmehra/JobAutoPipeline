@@ -39,5 +39,4 @@ class DataNormalizer:
         """Load normalized data from JSON file"""
         with open(filename, 'r', encoding='utf-8') as f:
             self.normalized_data = json.load(f)
-        return self.normalized_data</content>
-<parameter name="filePath">c:\Shiv\Projects\AIML\JobAutoPipeline\src\data_normalizer.py
+        return self.normalized_data

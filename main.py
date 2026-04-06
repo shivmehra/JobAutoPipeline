@@ -9,7 +9,7 @@ from src.apify_connector import ApifyConnector
 from src.webhook_listener import run_webhook_server, get_webhook_data
 from src.data_normalizer import DataNormalizer
 from src.llm_filter import LLMFilter
-from src.google_sheets_writer import ExcelWriter
+from src.excel_writer import ExcelWriter
 import config
 
 def main():
@@ -81,14 +81,13 @@ def main():
     filtered_data = llm_filter.filter_items(normalized_data)
     print(f"Filtered to {len(filtered_data)} items")
 
-    # Save to Google Sheets
-    print("Saving results to Google Sheets...")
+    # Save to Excel File
+    print("Saving results to Excel file...")
     success = sheets_writer.write_data(filtered_data)
     if success:
         print("Pipeline completed successfully!")
     else:
-        print("Error saving to Google Sheets")
+        print("Error saving to Excel file")
 
 if __name__ == "__main__":
-    main()</content>
-<parameter name="filePath">c:\Shiv\Projects\AIML\JobAutoPipeline\main.py
+    main()

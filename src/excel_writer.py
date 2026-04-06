@@ -68,5 +68,3 @@ class ExcelWriter:
         except Exception as e:
             print(f"Error appending to Excel file: {e}")
             return False
-            return False</content>
-<parameter name="filePath">c:\Shiv\Projects\AIML\JobAutoPipeline\src\google_sheets_writer.py

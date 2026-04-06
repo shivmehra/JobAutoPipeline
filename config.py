@@ -10,9 +10,9 @@ EXCEL_FILE_PATH = os.getenv('EXCEL_FILE_PATH', 'job_results.xlsx')
 
 # Actor IDs (replace with actual actor IDs)
 ACTOR_IDS = {
-    'actor1': 'your-actor-id-1',
-    'actor2': 'your-actor-id-2',
-    'actor3': 'your-actor-id-3'
+    'actor1': 'borderline/indeed-scraper',
+    'actor2': 'curious_coder/linkedin-jobs-scraper',
+    'actor3': 'memo23/naukri-scraper'
 }
 
 # Excel settings
@@ -26,5 +26,4 @@ FILTER_DOCUMENT_PATH = os.getenv('FILTER_DOCUMENT_PATH', 'filter_criteria.docx')
 NORMALIZED_DATA_PATH = os.getenv('NORMALIZED_DATA_PATH', 'normalized_data.json')
 
 # Webhook
-WEBHOOK_PORT = int(os.getenv('WEBHOOK_PORT', 5000))</content>
-<parameter name="filePath">c:\Shiv\Projects\AIML\JobAutoPipeline\config.py
+WEBHOOK_PORT = int(os.getenv('WEBHOOK_PORT', 5000))

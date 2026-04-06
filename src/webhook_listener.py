@@ -32,5 +32,4 @@ def get_webhook_data():
     """Get data from webhook queue"""
     if not webhook_queue.empty():
         return webhook_queue.get()
-    return None</content>
-<parameter name="filePath">c:\Shiv\Projects\AIML\JobAutoPipeline\src\webhook_listener.py
+    return None
