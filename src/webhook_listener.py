@@ -9,9 +9,9 @@ app = Flask(__name__)
 # Queue to hold webhook data
 webhook_queue = Queue()
 
-@app.route('/webhook', methods=['POST'])
+@app.route('/webhook/apify', methods=['POST'])
 def webhook():
-    """Receive webhook from Apify"""
+    """Receive webhook from Apify when an actor run finishes"""
     data = request.get_json()
     if data:
         webhook_queue.put(data)

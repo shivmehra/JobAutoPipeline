@@ -8,7 +8,11 @@ class ExcelWriter:
         self.sheet_name = sheet_name
 
         # Ensure the directory exists
-        os.makedirs(os.path.dirname(file_path), exist_ok=True)
+        dir_path = os.path.dirname(file_path)
+        if dir_path:
+            os.makedirs(dir_path, exist_ok=True)
+        else:
+            print("Warning: No directory specified for Excel file.")
 
     def write_data(self, data, worksheet_name=None):
         """Write data to Excel file"""
