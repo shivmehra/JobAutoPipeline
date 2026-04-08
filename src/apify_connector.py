@@ -9,7 +9,7 @@ class ApifyConnector:
 
     def run_actor(self, actor_id, input_data):
         """Run an Apify actor and return the run ID"""
-        run = self.client.actor(actor_id).call(input=input_data)
+        run = self.client.actor(actor_id).call(run_input=input_data)
         return run['id']
 
     def get_run_results(self, run_id):

@@ -11,9 +11,9 @@ EXCEL_FILE_PATH = os.getenv('EXCEL_FILE_PATH', 'job_results.xlsx')
 
 # Actor IDs (replace with actual actor IDs)
 ACTOR_IDS = {
-    'actor1': 'borderline/indeed-scraper',
-    'actor2': 'curious_coder/linkedin-jobs-scraper',
-    'actor3': 'memo23/naukri-scraper'
+    'borderline/indeed-scraper': 'MXLpngmVpE8WTESQr',
+    'curious_coder/linkedin-jobs-scraper': 'hKByXkMQaC5Qt9UMN',
+    'memo23/naukri-scraper': 'EYXvM0o2lS7rYzgey'
 }
 
 # Excel settings

@@ -16,13 +16,45 @@ class DataNormalizer:
             for item in actor_data:
                 # Normalize each item - this is a generic normalization
                 # You may need to customize based on specific actor outputs
+                # Detect source based on unique fields or URL patterns
+                if 'jobKey' in item:
+                    source = 'Indeed'
+                    item_id = item.get('jobKey', '')
+                    title = item.get('title', '')
+                    description = item.get('descriptionText', '')
+                    url = item.get('jobUrl', '')
+                    timestamp = item.get('datePublished', '')
+                elif 'trackingId' in item:
+                    source = 'LinkedIn'
+                    item_id = item.get('id', '')
+                    title = item.get('title', '')
+                    description = item.get('descriptionText', '')
+                    url = item.get('link', '')
+                    timestamp = item.get('postedAt', '')
+                elif 'jobId' in item and 'naukri' in item.get('url', '').lower():
+                    source = 'Naukri'
+                    item_id = item.get('jobId', '')
+                    title = item.get('title', '')
+                    description = item.get('description', item.get('shortDescription', ''))
+                    url = item.get('url', '')
+                    timestamp = item.get('createdDate', '')
+                else:
+                    # Fallback for unknown structures
+                    source = 'unknown'
+                    item_id = item.get('id', '')
+                    title = item.get('title', item.get('name', ''))
+                    description = item.get('description', '')
+                    url = item.get('url', '')
+                    timestamp = item.get('timestamp', '')
+
+                # Create normalized item
                 normalized_item = {
-                    'id': item.get('id', ''),
-                    'title': item.get('title', item.get('name', '')),
-                    'description': item.get('description', ''),
-                    'url': item.get('url', ''),
-                    'source': item.get('source', 'unknown'),
-                    'timestamp': item.get('timestamp', ''),
+                    'id': item_id,
+                    'title': title,
+                    'description': description,
+                    'url': url,
+                    'source': source,
+                    'timestamp': timestamp,
                     'raw_data': item  # Keep original data
                 }
                 normalized_items.append(normalized_item)
