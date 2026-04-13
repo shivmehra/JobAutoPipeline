@@ -17,6 +17,7 @@ def main():
     # Initialize components
     apify = ApifyConnector()
     normalizer = DataNormalizer()
+    normalizer.deduplicate()  # Remove duplicates before LLM filtering
     llm_filter = LLMFilter(model=config.OLLAMA_MODEL)
     excel_writer = ExcelWriter(
         config.EXCEL_FILE_PATH,
