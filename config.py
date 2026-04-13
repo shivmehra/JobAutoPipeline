@@ -6,7 +6,6 @@ load_dotenv()
 
 # API Keys
 APIFY_API_TOKEN = os.getenv('APIFY_API_TOKEN')
-APIFY_WEBHOOK_URL = os.getenv('APIFY_WEBHOOK_URL')
 EXCEL_FILE_PATH = os.getenv('EXCEL_FILE_PATH', 'job_results.xlsx')
 
 # Actor IDs (replace with actual actor IDs)
