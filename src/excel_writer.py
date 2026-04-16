@@ -63,8 +63,8 @@ class ExcelWriter:
             # Append new data
             combined_df = pd.concat([existing_df, new_df], ignore_index=True)
 
-            # Write back to Excel
-            with pd.ExcelWriter(self.file_path, engine='openpyxl') as writer:
+            # Write back to Excel with mode='a' to append instead of overwrite
+            with pd.ExcelWriter(self.file_path, engine='openpyxl', mode='a', if_sheet_exists='replace') as writer:
                 combined_df.to_excel(writer, sheet_name=sheet_name, index=False)
 
             print(f"Data appended to Excel file: {self.file_path}")

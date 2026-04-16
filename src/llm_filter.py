@@ -40,15 +40,27 @@ class LLMFilter:
                 options={'temperature': 0.1}  # Low temperature for consistent filtering
             )
             answer = response['response'].strip().upper()
-            return answer == 'YES'
+            
+            # More robust response checking
+            if 'YES' in answer or answer.startswith('Y'):
+                return True
+            return False
         except Exception as e:
             print(f"Error filtering item: {e}")
-            return False
+            # IMPORTANT: Return True on error to preserve data instead of deleting it
+            print(f"WARNING: Keeping item due to filter error: {item.get('title', 'Unknown')}")
+            return True
 
     def filter_items(self, items):
         """Filter a list of items using LLM"""
+        if not self.filter_criteria:
+            print("WARNING: No filter criteria loaded. Returning all items.")
+            return items
+        
         filtered_items = []
         for item in items:
             if self.filter_item(item):
                 filtered_items.append(item)
+        
+        print(f"Filtered {len(items)} items → {len(filtered_items)} items kept")
         return filtered_items

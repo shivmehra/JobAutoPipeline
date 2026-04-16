@@ -1,5 +1,6 @@
 # Configuration settings
 import os
+import json
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -8,58 +9,23 @@ load_dotenv()
 APIFY_API_TOKEN = os.getenv('APIFY_API_TOKEN')
 EXCEL_FILE_PATH = os.getenv('EXCEL_FILE_PATH', 'job_results.xlsx')
 
-# Actor IDs (replace with actual actor IDs)
-ACTOR_IDS = {
-    'borderline/indeed-scraper': 'MXLpngmVpE8WTESQr',
-    'curious_coder/linkedin-jobs-scraper': 'hKByXkMQaC5Qt9UMN',
-    'memo23/naukri-scraper': 'EYXvM0o2lS7rYzgey'
-}
+# Load Actor IDs from JSON file (configurable via env variable)
+ACTOR_IDS_FILE = os.getenv('ACTOR_IDS_FILE', 'actors.json')
+try:
+    with open(ACTOR_IDS_FILE, 'r') as f:
+        ACTOR_IDS = json.load(f)
+except (FileNotFoundError, json.JSONDecodeError) as e:
+    print(f"Warning: Could not load ACTOR_IDS from {ACTOR_IDS_FILE}: {e}")
+    ACTOR_IDS = {}
 
-# Per-actor input payloads. Customize the keys and values to match each actor's expected run input.
-ACTOR_RUN_INPUTS = {
-    'borderline/indeed-scraper': {
-        "country": "in",
-        "enableUniqueJobs": True,
-        "fromDays": "1",
-        "includeSimilarJobs": False,
-        "jobType": "fulltime",
-        "level": "entry_level",
-        "location": "Mumbai, Maharashtra",
-        "maxRows": 5,
-        "maxRowsPerUrl": 3,
-        "query": "Analyst",
-        "remote": "hybrid",
-        "sort": "relevance",
-        "urls": [
-            "https://in.indeed.com/jobs?q=ai+developer&l=Mumbai%2C+Maharashtra&fromage=3&radius=25&sc=0kf%3Aattr%28CF3CP%29%3B&from=searchOnDesktopSerp&vjk=081ff9624c1074d7",
-            "https://in.indeed.com/jobs?q=front+end+developer&l=Mumbai%2C+Maharashtra&fromage=3&radius=25&sc=0kf%3Aattr%285QWDV%7C7EQCZ%7CCF3CP%252COR%29attr%286M28R%7C84K74%7CFGY89%7CJB2WC%7CNGEEK%7CX62BT%7CY7U37%252COR%29%3B&from=searchOnDesktopSerp&vjk=eba79aef448b8e17"
-        ]
-    },
-    'curious_coder/linkedin-jobs-scraper': {
-    "count": 10,
-    "scrapeCompany": True,
-    "splitByLocation": False,
-    "splitCountry": "IN",
-    "urls": [
-        "https://in.linkedin.com/jobs/search?keywords=AI%20Developer&location=India&geoId=102713980&f_JT=F&f_PP=105214831%2C105556991%2C103671728%2C106164952&f_TPR=r86400&position=1&pageNum=0"
-    ]
-},
-    'memo23/naukri-scraper': {
-        "includeAmbitionBoxDetails": False,
-        "maxConcurrency": 1,
-        "maxRequestRetries": 2,
-        "proxy": {
-            "useApifyProxy": True,
-            "apifyProxyGroups": [
-                "RESIDENTIAL"
-            ],
-            "apifyProxyCountry": "IN"
-        },
-        "startUrls": [
-            "https://www.naukri.com/ai-developer-jobs-in-mumbai-all-areas?k=ai%20developer&l=mumbai%20(all%20areas)%2C%20pune%2C%20hyderabad%2C%20bengaluru&nignbevent_src=jobsearchDeskGNB&experience=0&jobAge=1"
-        ]
-    }
-}
+# Load Actor Run Inputs from JSON file (configurable via env variable)
+ACTOR_RUN_INPUTS_FILE = os.getenv('ACTOR_RUN_INPUTS_FILE', 'actor_inputs.json')
+try:
+    with open(ACTOR_RUN_INPUTS_FILE, 'r') as f:
+        ACTOR_RUN_INPUTS = json.load(f)
+except (FileNotFoundError, json.JSONDecodeError) as e:
+    print(f"Warning: Could not load ACTOR_RUN_INPUTS from {ACTOR_RUN_INPUTS_FILE}: {e}")
+    ACTOR_RUN_INPUTS = {}
 
 # Excel settings
 EXCEL_SHEET_NAME = os.getenv('EXCEL_SHEET_NAME', 'Job Results')
