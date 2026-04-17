@@ -24,12 +24,12 @@ def main():
         config.EXCEL_SHEET_NAME
     )
 
-    # Load filter criteria from Word document
+    # Load resume from Word document for LLM-based filtering
     try:
-        llm_filter.load_word_document(config.FILTER_DOCUMENT_PATH)
-        print("Filter criteria loaded from Word document")
+        llm_filter.load_resume_document(config.FILTER_DOCUMENT_PATH)
+        print("✓ Resume loaded for job matching")
     except Exception as e:
-        print(f"Error loading filter document: {e}")
+        print(f"✗ Error loading resume document: {e}")
         return
 
     # Run Apify actors synchronously and collect results
@@ -71,20 +71,29 @@ def main():
     normalizer.save_to_json(config.NORMALIZED_DATA_PATH)
     print(f"✓ Normalized {len(normalized_data)} items")
 
-    # Filter with LLM
-    print("\nFiltering data with LLM...")
+    # Filter with LLM based on resume match
+    print("\n" + "="*60)
+    print("RESUME-BASED JOB FILTERING")
+    print("="*60)
+    print("\nScoring jobs against resume...")
     try:
         filtered_data = llm_filter.filter_items(normalized_data)
-        print(f"✓ Filtered to {len(filtered_data)} items")
+        if filtered_data:
+            print(f"✓ {len(filtered_data)} jobs passed filtering (score ≥ 4)")
+        else:
+            print("⚠ No jobs passed filtering (score ≥ 4)")
     except Exception as e:
         print(f"✗ LLM filtering failed: {e}")
         print("Proceeding with unfiltered data...")
         filtered_data = normalized_data
 
-    # Save to Excel
+    # Save to Excel with sorting and formatting
+    print("\n" + "="*60)
+    print("SAVING RESULTS")
+    print("="*60)
     print("\nSaving results to Excel file...")
     try:
-        success = excel_writer.write_data(filtered_data)
+        success = excel_writer.write_data(filtered_data, sort_by_score=True)
         if success:
             print(f"✓ Results saved to {config.EXCEL_FILE_PATH}")
         else:
