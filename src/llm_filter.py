@@ -1,6 +1,7 @@
 # LLM filter using local Ollama with resume-based scoring
 import os
 import json
+import re
 from docx import Document
 from ollama import Client
 from src.resume_parser import ResumeParser
@@ -12,6 +13,32 @@ class LLMFilter:
         self.filter_criteria = ""  # Deprecated - kept for backward compatibility
         self.resume_data = {}
         self.resume_summary = ""
+
+    def _extract_json_from_response(self, response_text):
+        """
+        Extract JSON object from response text that may contain extra text.
+        LLM models often add explanations before/after the JSON object.
+        """
+        try:
+            # Try direct parsing first (if response is pure JSON)
+            return json.loads(response_text)
+        except json.JSONDecodeError:
+            pass
+        
+        # Try to extract JSON object if it's surrounded by text
+        # Look for pattern: {...}
+        json_pattern = r'\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}'
+        match = re.search(json_pattern, response_text)
+        
+        if match:
+            json_str = match.group(0)
+            try:
+                return json.loads(json_str)
+            except json.JSONDecodeError:
+                pass
+        
+        # If all else fails, return None
+        return None
 
     def load_word_document(self, doc_path):
         """
@@ -89,9 +116,13 @@ IMPORTANT:
             )
             response_text = response['response'].strip()
             
-            # Parse JSON response
+            # Parse JSON response with fallback extraction
             try:
-                result = json.loads(response_text)
+                result = self._extract_json_from_response(response_text)
+                if result is None:
+                    print(f"Warning: Could not extract JSON from response for job '{job_title[:30]}': {response_text[:100]}")
+                    return (5, None)
+                
                 score = int(result.get('score', 5))
                 reason = result.get('reason') if score < 4 else None
                 
@@ -99,8 +130,8 @@ IMPORTANT:
                 score = max(1, min(10, score))
                 
                 return (score, reason)
-            except json.JSONDecodeError:
-                print(f"Warning: Invalid JSON response for job '{job_title[:30]}': {response_text[:100]}")
+            except (ValueError, TypeError, KeyError) as e:
+                print(f"Warning: Invalid JSON data for job '{job_title[:30]}': {e}")
                 return (5, None)  # Default to neutral
         except Exception as e:
             print(f"✗ Error scoring job '{job_title[:30]}': {e}")

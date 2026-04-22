@@ -67,7 +67,7 @@ def main():
     print("="*60)
     
     print("\nNormalizing data...")
-    normalized_data = normalizer.normalize_actor_data(all_actor_data)
+    normalized_data = normalizer.normalize_actor_data(all_actor_data, verbose=True)
     normalizer.save_to_json(config.NORMALIZED_DATA_PATH)
     print(f"✓ Normalized {len(normalized_data)} items")
 

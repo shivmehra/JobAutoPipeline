@@ -40,6 +40,7 @@ class DataNormalizer:
             'source': 'Naukri',
             'posted_date': item.get('createdDate', ''),
             'job_description': item.get('description', item.get('shortDescription', '')),
+            'job_requirements': item.get('description', item.get('shortDescription', '')),  # For LLM filtering
             'job_type': item.get('employmentType', ''),
             
             # Company Info
@@ -91,8 +92,11 @@ class DataNormalizer:
     def _normalize_linkedin(self, item):
         """Normalize LinkedIn job posting"""
         salary_info = item.get('salaryInfo', [])
-        salary_min = salary_info[1] if len(salary_info) > 1 else ''
-        salary_max = salary_info[0] if len(salary_info) > 0 else ''
+        # Handle case where salaryInfo might not be a list
+        if not isinstance(salary_info, list):
+            salary_info = []
+        salary_min = salary_info[0] if len(salary_info) > 0 else ''
+        salary_max = salary_info[1] if len(salary_info) > 1 else ''
         
         normalized = {
             # Basic Info
@@ -103,6 +107,7 @@ class DataNormalizer:
             'posted_date': item.get('postedAt', ''),
             'job_description': item.get('descriptionText', ''),
             'job_type': ', '.join(item.get('benefits', [])) if item.get('benefits') else '',
+            'job_requirements': item.get('descriptionText', ''),  # For LLM filtering
             
             # Company Info
             'company_name': item.get('companyName', ''),
@@ -161,6 +166,7 @@ class DataNormalizer:
             'source': 'Indeed',
             'posted_date': item.get('datePublished', ''),
             'job_description': item.get('descriptionText', ''),
+            'job_requirements': item.get('descriptionText', ''),  # For LLM filtering
             'job_type': ', '.join(item.get('jobType', [])) if item.get('jobType') else '',
             'is_remote': item.get('isRemote', False),
             'is_urgent_hire': item.get('hiringDemand', {}).get('isUrgentHire', False),
@@ -215,27 +221,42 @@ class DataNormalizer:
         }
         return normalized
 
-    def normalize_actor_data(self, actor_data_list):
+    def normalize_actor_data(self, actor_data_list, verbose=False):
         """
         Normalize data from multiple actors into a unified flat schema
         actor_data_list: list of data from different actors
+        verbose: if True, print errors instead of silently skipping
         """
         normalized_items = []
+        errors = []
 
         for actor_data in actor_data_list:
             for item in actor_data:
-                # Detect source and normalize accordingly
-                if 'jobKey' in item:
-                    normalized_item = self._normalize_indeed(item)
-                elif 'trackingId' in item or (item.get('link') and 'linkedin.com' in item.get('link', '')):
-                    normalized_item = self._normalize_linkedin(item)
-                elif 'jobId' in item:
-                    normalized_item = self._normalize_naukri(item)
-                else:
-                    # Fallback - skip unknown format
-                    continue
+                try:
+                    # Detect source and normalize accordingly
+                    if 'jobKey' in item:
+                        normalized_item = self._normalize_indeed(item)
+                    elif 'trackingId' in item or (item.get('link') and 'linkedin.com' in item.get('link', '')):
+                        normalized_item = self._normalize_linkedin(item)
+                    elif 'jobId' in item:
+                        normalized_item = self._normalize_naukri(item)
+                    else:
+                        # Fallback - skip unknown format
+                        if verbose:
+                            print(f"⚠ Skipping unknown format item: {item.get('title', 'Unknown')[:50]}")
+                        continue
 
-                normalized_items.append(normalized_item)
+                    normalized_items.append(normalized_item)
+                except Exception as e:
+                    job_title = item.get('title', item.get('job_title', item.get('jobTitle', 'Unknown')))[:50]
+                    error_msg = f"Error normalizing job '{job_title}': {str(e)}"
+                    errors.append(error_msg)
+                    if verbose:
+                        print(f"✗ {error_msg}")
+                    continue
+        
+        if errors and verbose:
+            print(f"\n⚠ {len(errors)} items failed to normalize. Continuing with {len(normalized_items)} valid items.")
 
         self.normalized_data = normalized_items
         return normalized_items
